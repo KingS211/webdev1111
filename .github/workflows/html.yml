@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Generate Images</title>
+</head>
+<body>
+  <h1>Generate Images</h1>
+  <form>
+    <label for="prompt">Prompt:</label>
+    <input type="text" id="prompt" name="prompt"><br><br>
+    <label for="steps">Steps:</label>
+    <input type="number" id="steps" name="steps"><br><br>
+    <input type="submit" value="Generate">
+  </form>
+  <div id="images"></div>
+
+  <script>
+    const form = document.querySelector('form');
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const prompt = document.getElementById('prompt').value;
+      const steps = document.getElementById('steps').value;
+      fetch('/generate-images', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt, steps })
+      })
+      .then(response => response.json())
+      .then(data => {
+        const images = document.getElementById('images');
+        images.innerHTML = '';
+        data.images.forEach((imageData) => {
+          const image = new Image();
+          image.src = 'data:image/png;base64,' + imageData;
+          images.appendChild(image);
+        });
+      })
+      .catch(error => console.error(error));
+    });
+  </script>
+</body>
+</html>
